@@ -35,13 +35,13 @@ import com.mayab.quality.unittest.dao.UserMysqlDAO;
 import com.mayab.quality.unittest.model.User;
 import com.mayab.quality.unittest.service.UserService;
 
-class UserSeviceTest extends DBTestCase{
+class UserServiceTest extends DBTestCase{
 	
 	private IDAOUser dao;
 	private UserService service;
 	private String dataSetFile = "src/test/resources/initDB.xml";
 	
-	public UserSeviceTest() {
+	public UserServiceTest() {
 		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_DRIVER_CLASS, "com.mysql.cj.jdbc.Driver");
 		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_CONNECTION_URL, "jdbc:mysql://localhost:3307/dbunit");
 		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, "root");
