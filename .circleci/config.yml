@@ -3,13 +3,13 @@ version: 2.1
 jobs:
   run-integration-tests:
     docker:
-      - image: cimg/openjdk:17.0
-      - image: mysql:8.0
+      - image: cimg/openjdk:17.0  # Contenedor base con Java 17
+      - image: mysql:8.0          # Contenedor de MySQL
         environment:
           MYSQL_ROOT_PASSWORD: 123456
           MYSQL_DATABASE: dbunit
     steps:
-      - checkout
+      - checkout  # Descarga el código fuente
       - run:
           name: Install MySQL Client
           command: |
@@ -29,8 +29,8 @@ jobs:
           command: |
             mysql -h 127.0.0.1 -P 3306 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
       - run:
-          name: Debug Test Execution
-          command: mvn -Dtest=com.mayab.quality.integration.UserServiceTest -e -X test
+          name: Run Integration Test
+          command: mvn test -Dtest=com.mayab.quality.integration.UserServiceTest
       - run:
           name: Notify
           command: echo "Integration Tests completed successfully."
@@ -38,5 +38,8 @@ jobs:
 workflows:
   version: 2
   test-workflow:
+    jobs:
+      - run-integration-tests
+
     jobs:
       - run-integration-tests
