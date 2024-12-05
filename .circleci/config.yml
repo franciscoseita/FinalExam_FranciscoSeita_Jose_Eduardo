@@ -55,6 +55,27 @@ jobs:
           name: Notify
           command: echo "Integration Tests completed successfully."
 
+  jobs:
+  run-functional-tests:
+    docker:
+      - image: cimg/openjdk:17.0  # Java para ejecutar los tests
+      - image: selenium/standalone-chrome:4.10.0  # Contenedor con Selenium y Chrome
+    steps:
+      - checkout  # Clonar el código fuente
+
+      # Instalar dependencias de Maven
+      - run:
+          name: Instalar dependencias
+          command: mvn dependency:resolve
+
+      # Ejecutar functional tests
+      - run:
+          name: Ejecutar Functional Tests
+          command: mvn test -Dtest=com.mayab.quality.functional.CRUDSeleniumTest
+      - run:
+          name: Notify
+          command: echo "Functional Tests ejecutados correctamente."
+
 
 workflows:
   version: 2
