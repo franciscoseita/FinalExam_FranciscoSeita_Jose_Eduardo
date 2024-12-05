@@ -30,33 +30,27 @@ jobs:
           name: Install MySQL Client
           command: |
             sudo apt-get update
-            sudo apt-get install -y mysql-client netcat
+            sudo apt-get install -y mysql-client
       - run:
-          name: Test MySQL Connection
+          name: Wait for MySQL to be Ready
           command: |
-            echo "Attempting to connect to MySQL..."
-            for i in `seq 1 120`; do
-              echo 'SELECT 1' | mysql -h 127.0.0.1 -P 3306 -u root -p123456 && echo "MySQL is ready!" && exit 0
-              echo "Waiting for MySQL..."
+            for i in `seq 1 180`; do
+              nc -z 127.0.0.1 3306 && echo "MySQL is reachable!" && exit 0
+              echo "Waiting for MySQL to be reachable..."
               sleep 2
             done
-            echo "MySQL did not start in time" && exit 1
+            echo "Failed to connect to MySQL host" && exit 1
       - run:
-          name: Initialize Database
+          name: Verify MySQL is Ready for Tests
           command: |
-            mysql -h 127.0.0.1 -P 3306 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
+            mysql -h 127.0.0.1 -P 3306 -u root -p123456 -e "SELECT 1;"
       - run:
           name: Verify Tables in Database
           command: |
             mysql -h 127.0.0.1 -P 3306 -u root -p123456 -e "SHOW TABLES;" dbunit
       - run:
-          name: Verify MySQL is Ready for Tests
-          command: |
-            mysql -h 127.0.0.1 -P 3306 -u root -p123456 -e "SELECT 1;"
-
-      - run:
           name: Run Integration Test
-          command: mvn test -Dtest=com.mayab.quality.integration.UserSeviceTest -e -X
+          command: mvn test -Dtest=com.mayab.quality.integration.UserServiceTest -e -X
       - run:
           name: Notify
           command: echo "Integration Tests completed successfully."
