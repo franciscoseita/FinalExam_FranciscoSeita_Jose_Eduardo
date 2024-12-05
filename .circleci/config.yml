@@ -32,13 +32,15 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y mysql-client
       - run:
-          name: Wait for MySQL to be Ready
+          name: Check Network Connectivity to MySQL
           command: |
+            ping -c 4 mysql || (echo "Failed to connect to MySQL host" && exit 1)
+      - run:
+          name: Test MySQL Connection
+          command: |
+            echo "Attempting to connect to MySQL..."
             for i in `seq 1 120`; do
-              if echo 'SELECT 1' | mysql -h mysql -P 3306 -u root -p123456 > /dev/null 2>&1; then
-                echo "MySQL is ready!"
-                exit 0
-              fi
+              echo 'SELECT 1' | mysql -h mysql -P 3306 -u root -p123456 && echo "MySQL is ready!" && exit 0
               echo "Waiting for MySQL..."
               sleep 2
             done
