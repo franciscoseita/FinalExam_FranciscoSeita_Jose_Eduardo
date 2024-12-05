@@ -50,6 +50,11 @@ jobs:
           command: |
             mysql -h 127.0.0.1 -P 3306 -u root -p123456 -e "SHOW TABLES;" dbunit
       - run:
+          name: Verify MySQL is Ready for Tests
+          command: |
+            mysql -h 127.0.0.1 -P 3306 -u root -p123456 -e "SELECT 1;"
+
+      - run:
           name: Run Integration Test
           command: mvn test -Dtest=com.mayab.quality.integration.UserSeviceTest -e -X
       - run:
