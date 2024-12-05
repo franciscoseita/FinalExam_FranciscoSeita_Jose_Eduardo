@@ -29,8 +29,8 @@ jobs:
           command: |
             mysql -h 127.0.0.1 -P 3306 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
       - run:
-          name: List Test Classes
-          command: ls -R target/test-classes
+          name: Run Integration Test
+          command: mvn test -Dtest=com.mayab.quality.integration.UserSeviceTest
       - run:
           name: Notify
           command: echo "Integration Tests completed successfully."
@@ -40,4 +40,5 @@ workflows:
   test-workflow:
     jobs:
       - run-integration-tests
+
 
