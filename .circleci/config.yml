@@ -3,21 +3,23 @@ version: 2.1
 jobs:
   run-unit-tests:
     docker:
-      - image: cimg/openjdk:17.0  # Usa Java 17
+      - image: cimg/openjdk:17.0  # Imagen base con Java 17
     steps:
       - checkout  # Descarga el código fuente
       - run:
           name: Install Dependencies
           command: mvn dependency:resolve  # Asegura que las dependencias estén disponibles
       - run:
-          name: Run UserServiceTest
-          command: mvn -Dtest=UserServiceTest test  # Ejecuta únicamente UserServiceTest
+          name: Run Unit Tests (UserServiceTest)
+          command: mvn -Dtest=com.mayab.quality.unittest.service.UserServiceTest test
       - run:
           name: Notify
-          command: echo "UserServiceTest executed successfully."
+          command: echo "Unit Tests completed successfully."
+
 
 workflows:
   version: 2
   test-workflow:
     jobs:
       - run-unit-tests
+      
