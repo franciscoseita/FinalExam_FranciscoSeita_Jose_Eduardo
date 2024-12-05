@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Wait for MySQL to be Ready
           command: |
-            for i in `seq 1 60`; do
+            for i in `seq 1 120`; do
               if mysqladmin ping -h mysql -P 3306 --silent; then
                 echo "MySQL is ready!"
                 exit 0
@@ -42,6 +42,13 @@ jobs:
               sleep 2
             done
             echo "MySQL did not start in time" && exit 1
+      - run:
+          name: Check MySQL Logs
+          command: docker logs $(docker ps -q --filter ancestor=mysql:8.0)
+      - run:
+          name: Test MySQL Connection
+          command: |
+            mysql -h mysql -P 3306 -u root -p123456 -e "SELECT 1;"
       - run:
           name: Initialize Database
           command: |
@@ -52,6 +59,7 @@ jobs:
       - run:
           name: Notify
           command: echo "Integration Tests completed successfully."
+
 
 workflows:
   version: 2
