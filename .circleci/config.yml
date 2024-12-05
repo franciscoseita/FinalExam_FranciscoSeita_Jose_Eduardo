@@ -27,7 +27,6 @@ jobs:
         ports:
           - "3307:3306"  # Mapea el puerto 3307 al 3306 interno
     steps:
-      - checkout
       - run:
           name: Install MySQL Client
           command: |
