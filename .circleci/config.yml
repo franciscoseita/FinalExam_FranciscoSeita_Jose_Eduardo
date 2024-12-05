@@ -16,7 +16,7 @@ jobs:
           name: Notify
           command: echo "Unit Tests completed successfully."
 
-  jobs:
+
   run-integration-tests:
     docker:
       - image: cimg/openjdk:17.0
