@@ -16,10 +16,40 @@ jobs:
           name: Notify
           command: echo "Unit Tests completed successfully."
 
+  run-integration-tests:
+    docker:
+      - image: cimg/openjdk:17.0  # Imagen principal con Java 17
+      - image: mysql:8.0  # Contenedor de MySQL
+        environment:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: dbunit
+          MYSQL_USER: root
+          MYSQL_PASSWORD: 123456
+    steps:
+      - checkout  # Descarga el código fuente
+      - run:
+          name: Wait for MySQL to be Ready
+          command: |
+            for i in `seq 1 30`; do
+              nc -z localhost 3307 && echo "MySQL is up" && exit 0
+              echo "Waiting for MySQL..."
+              sleep 2
+            done
+            echo "MySQL did not start in time" && exit 1
+      - run:
+          name: Initialize Database
+          command: |
+            mysql -h 127.0.0.1 -P 3307 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
+      - run:
+          name: Run Integration Tests (UserServiceTest)
+          command: mvn -Dtest=com.mayab.quality.integration.UserServiceTest test
+      - run:
+          name: Notify
+          command: echo "Integration Tests completed successfully."
 
 workflows:
   version: 2
   test-workflow:
     jobs:
       - run-unit-tests
-      
+      - run-integration-tests
