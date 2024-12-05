@@ -1,22 +1,23 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
 
-# Define jobs and workflows
 jobs:
-  build-and-test:
+  run-unit-tests:
     docker:
       - image: cimg/openjdk:17.0  # Usa Java 17
     steps:
       - checkout  # Descarga el código fuente
       - run:
-          name: Build Project
-          command: mvn -B -DskipTests clean package  # Compila sin ejecutar pruebas
+          name: Install Dependencies
+          command: mvn dependency:resolve  # Asegura que las dependencias estén disponibles
+      - run:
+          name: Run UserServiceTest
+          command: mvn -Dtest=UserServiceTest test  # Ejecuta únicamente UserServiceTest
       - run:
           name: Notify
-          command: echo "Tests completed successfully."
+          command: echo "UserServiceTest executed successfully."
 
 workflows:
   version: 2
   test-workflow:
     jobs:
-      - build-and-test
+      - run-unit-tests
