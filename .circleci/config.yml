@@ -16,6 +16,39 @@ jobs:
           name: Notify
           command: echo "UserServiceTest executed successfully."
 
+
+    run-integration-tests:
+      docker:
+        - image: cimg/openjdk:17.0  # Imagen principal con Java 17
+        - image: mysql:8.0  # Contenedor MySQL para la base de datos
+          environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_DATABASE: testdb
+            MYSQL_USER: testuser
+            MYSQL_PASSWORD: testpassword
+  
+      steps:
+        - checkout  # Descarga el código fuente
+        - run:
+            name: Wait for MySQL to be Ready
+            command: |
+              for i in `seq 1 30`; do
+                nc -z localhost 3306 && echo "MySQL is up" && exit 0
+                echo "Waiting for MySQL..."
+                sleep 2
+              done
+              echo "MySQL did not start in time" && exit 1
+        - run:
+            name: Initialize Database
+            command: |
+              mysql -h 127.0.0.1 -u testuser -ptestpassword testdb < src/test/resources/SQL_table.txt
+        - run:
+            name: Run Integration Tests
+            command: mvn -Dtest=UserServiceTest test
+        - run:
+            name: Notify
+            command: echo "Integration tests completed successfully."
+
 workflows:
   version: 2
   test-workflow:
