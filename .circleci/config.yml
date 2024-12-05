@@ -26,6 +26,11 @@ jobs:
     steps:
       - checkout  # Descarga el código fuente
       - run:
+          name: Install MySQL Client
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y mysql-client
+      - run:
           name: Wait for MySQL to be Ready
           command: |
             for i in `seq 1 30`; do
