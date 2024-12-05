@@ -34,7 +34,12 @@ jobs:
       - run:
           name: Check Network Connectivity to MySQL
           command: |
-            ping -c 4 mysql || (echo "Failed to connect to MySQL host" && exit 1)
+            for i in `seq 1 120`; do
+              nc -z mysql 3306 && echo "MySQL is reachable!" && exit 0
+              echo "Waiting for MySQL to be reachable..."
+              sleep 2
+            done
+            echo "Failed to connect to MySQL host" && exit 1
       - run:
           name: Test MySQL Connection
           command: |
