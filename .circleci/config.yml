@@ -16,7 +16,6 @@ jobs:
           name: Notify
           command: echo "Unit Tests completed successfully."
 
-  jobs:
   run-integration-tests:
     docker:
       - image: cimg/openjdk:17.0
@@ -55,7 +54,6 @@ jobs:
           name: Notify
           command: echo "Integration Tests completed successfully."
 
-  jobs:
   run-functional-tests:
     docker:
       - image: cimg/openjdk:17.0  # Java para ejecutar los tests
@@ -75,7 +73,6 @@ jobs:
       - run:
           name: Notify
           command: echo "Functional Tests ejecutados correctamente."
-
 
 workflows:
   version: 2
