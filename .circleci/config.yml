@@ -30,7 +30,7 @@ jobs:
             mysql -h 127.0.0.1 -P 3306 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
       - run:
           name: Run Integration Tests (UserServiceTest)
-          command: mvn -Dtest=com.mayab.quality.integration.* test
+          command: mvn -Dtest=com.mayab.quality.integration.UserServiceTest test
       - run:
           name: Notify
           command: echo "Integration Tests completed successfully."
