@@ -16,6 +16,7 @@ jobs:
           name: Notify
           command: echo "Unit Tests completed successfully."
 
+  jobs:
   run-integration-tests:
     docker:
       - image: cimg/openjdk:17.0
@@ -23,6 +24,8 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: 123456
           MYSQL_DATABASE: dbunit
+        ports:
+          - "3307:3306"  # Mapea el puerto 3307 al 3306 interno
     steps:
       - checkout
       - run:
@@ -34,7 +37,7 @@ jobs:
           name: Wait for MySQL to be Ready
           command: |
             for i in `seq 1 60`; do
-              if mysqladmin ping -h 127.0.0.1 -P 3306 --silent; then
+              if mysqladmin ping -h 127.0.0.1 -P 3307 --silent; then
                 echo "MySQL is ready!"
                 exit 0
               fi
@@ -45,14 +48,13 @@ jobs:
       - run:
           name: Initialize Database
           command: |
-            mysql -h 127.0.0.1 -P 3306 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
+            mysql -h 127.0.0.1 -P 3307 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
       - run:
-          name: Verify Database Initialization
-          command: |
-            mysql -h 127.0.0.1 -P 3306 -u root -p123456 -e "SHOW TABLES;" dbunit
+          name: Run Integration Test
+          command: mvn test -Dtest=com.mayab.quality.integration.UserServiceTest -e -X
       - run:
-          name: Debug Maven Test
-          command: mvn test -Dtest=com.mayab.quality.integration.UserSeviceTest -e -X
+          name: Notify
+          command: echo "Integration Tests completed successfully."
 workflows:
   version: 2
   test-workflow:
