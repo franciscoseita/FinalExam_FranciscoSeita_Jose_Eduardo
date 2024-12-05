@@ -23,8 +23,6 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: 123456
           MYSQL_DATABASE: dbunit
-        ports:
-          - "3307:3306"  # Mapea el puerto 3307 al 3306 interno
     steps:
       - checkout  # Descarga el código fuente
       - run:
@@ -36,7 +34,7 @@ jobs:
           name: Wait for MySQL to be Ready
           command: |
             for i in `seq 1 60`; do
-              if mysqladmin ping -h 127.0.0.1 -P 3307 --silent; then
+              if mysqladmin ping -h mysql -P 3306 --silent; then
                 echo "MySQL is ready!"
                 exit 0
               fi
@@ -47,7 +45,7 @@ jobs:
       - run:
           name: Initialize Database
           command: |
-            mysql -h 127.0.0.1 -P 3307 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
+            mysql -h mysql -P 3306 -u root -p123456 dbunit < src/test/resources/SQL_table.txt
       - run:
           name: Run Integration Test
           command: mvn test -Dtest=com.mayab.quality.integration.UserServiceTest -e -X
